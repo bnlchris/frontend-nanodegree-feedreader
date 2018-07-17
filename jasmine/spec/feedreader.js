@@ -78,11 +78,12 @@ $(function() {
             //when clicked again menu should be invisible again
             hamburgerIcon.click();
             expect(document.body.className).toContain('menu-hidden');
-          })
+          });
     });
 
 
     /* TODO: Write a new test suite named "Initial Entries" */
+    describe('Initial Entries', function() {
 
         /* TODO: Write a test that ensures when the loadFeed
          * function is called and completes its work, there is at least
@@ -91,10 +92,57 @@ $(function() {
          * the use of Jasmine's beforeEach and asynchronous done() function.
          */
 
+        //first, we have to use the beforeEach function to ensure loadFeed is called first
+        beforeEach(function(done) {
+            loadFeed(0, function() {
+                done();
+            });
+        });   
+
+        //Now we can set the expectation
+        it('container has entry after loading', function(done) {
+            //check length of array and store it in a variable
+            const feedInDOM = document.querySelector('.feed');
+            let numberOfFeeds = feedInDOM.getElementsByClassName("entry").length;
+
+            //set expectation using Jasmine's toBeGreaterThan matcher
+            expect(numberOfFeeds).toBeGreaterThan(0);
+            done();
+        });
+
+    });
+
     /* TODO: Write a new test suite named "New Feed Selection" */
+    describe('New Feed Selection', function() {
 
         /* TODO: Write a test that ensures when a new feed is loaded
          * by the loadFeed function that the content actually changes.
          * Remember, loadFeed() is asynchronous.
          */
+
+         //set variable for the feed in the DOM before reloading
+         let feedBeforeRefresh;
+
+         //beforeEach function ensures that loadFeed goes first
+         beforeEach(function(done) {
+            loadFeed(0, function() {
+                //get cóntent before reloading
+                const feedBeforeRefresh = document.body.querySelector('.feed').innerHTML;
+                loadFeed(1, function() {
+                    done();
+                });
+            });
+         });
+
+         it('new content after loading', function(done) {
+            //get content after loading
+            const feedAfterRefresh = document.body.querySelector('.feed').innerHTML;
+
+            // set expectation: Old content must differ from new one
+            expect(feedBeforeRefresh).not.toBe(feedAfterRefresh);
+            done();
+         });
+
+    });
+
 }());
